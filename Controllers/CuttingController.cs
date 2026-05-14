@@ -270,37 +270,36 @@ namespace CuttingProject.Web.Controllers
                         currentRow++;
                     }
 
+                    // Only sum detail rows for total meters
+                    // Bin-level summary
                     double binTotalMeters = Math.Round(
-                        binGroup.Sum(b => b.TotalMeters), 3);
-                    double binLength = binGroup.Max(b => b.BinLength);
-                    double binOffCut = binGroup.Max(b => b.OffCut);
-
-                    IXLRange summaryRange = ws.Range(currentRow, 1, currentRow, 9);
-                    summaryRange.Style.Fill.BackgroundColor =
-                        XLColor.FromArgb(255, 243, 205);
-                    summaryRange.Style.Font.Bold = true;
-                    summaryRange.Style.Border.OutsideBorder =
-                        XLBorderStyleValues.Thin;
+                        binGroup.Where(b => b.Part != "SUMMARY").Sum(b => b.TotalMeters), 3);
+                    double binLength = Math.Round(
+                        binGroup.Where(b => b.Part == "SUMMARY").Sum(b => b.BinLength), 3);
+                    double binOffCut = Math.Round(
+                        binGroup.Where(b => b.Part == "SUMMARY").Sum(b => b.OffCut), 3);
 
                     ws.Cell(currentRow, 5).Value = binTotalMeters;
                     ws.Cell(currentRow, 6).Value = 1;
                     ws.Cell(currentRow, 7).Value = binLength;
                     ws.Cell(currentRow, 8).Value = binOffCut;
-
                     currentRow++;
+
+
                 }
 
-                double profileTotal = Math.Round(
-                    profileBins.Sum(b => b.TotalMeters), 3);
-                double profileBinTotal = profileBins
-                    .Where(b => b.BinLength > 0).Sum(b => b.BinLength);
-                double profileOffCut = Math.Round(
-                    profileBins.Where(b => b.OffCut > 0).Sum(b => b.OffCut), 3);
+                // Profile-level totals
+                double profileTotalMeters = Math.Round(
+                    profileBins.Where(b => b.Part != "SUMMARY").Sum(b => b.TotalMeters), 3);
+                double profileBinTotalLength = profileBins
+                    .Where(b => b.Part == "SUMMARY").Sum(b => b.BinLength);
+                double profileOffCutTotal = Math.Round(
+                    profileBins.Where(b => b.Part == "SUMMARY").Sum(b => b.OffCut), 3);
 
                 ws.Cell(currentRow, 1).Value = "TOTAL";
-                ws.Cell(currentRow, 5).Value = profileTotal;
-                ws.Cell(currentRow, 7).Value = profileBinTotal;
-                ws.Cell(currentRow, 8).Value = profileOffCut;
+                ws.Cell(currentRow, 5).Value = profileTotalMeters;
+                ws.Cell(currentRow, 7).Value = profileBinTotalLength;
+                ws.Cell(currentRow, 8).Value = profileOffCutTotal;
 
                 IXLRange totalRange = ws.Range(currentRow, 1, currentRow, 9);
                 totalRange.Style.Font.Bold = true;
