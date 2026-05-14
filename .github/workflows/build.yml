@@ -1,3 +1,28 @@
-git add .github/
-git commit -m "Add CI workflow"
-git push
+name: Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore CuttingProject.Web.csproj
+
+    - name: Build
+      run: dotnet build CuttingProject.Web.csproj --no-restore --configuration Release
+
+    - name: Publish
+      run: dotnet publish CuttingProject.Web.csproj --no-build --configuration Release
