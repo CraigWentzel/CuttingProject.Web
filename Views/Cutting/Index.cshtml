@@ -1,0 +1,124 @@
+﻿@{
+    ViewData["Title"] = "CRC";
+}
+
+<div class="hero-section">
+    <div class="hero-content">
+        <div class="hero-badge">
+            <i class="bi bi-scissors"></i>
+            Craig Ryan Consulting — Steel Cutting Manager
+        </div>
+        <h1 class="hero-title">
+            Cutting List <span class="hero-accent">Bin Allocator</span>
+        </h1>
+        <p class="hero-subtitle">
+            Upload your PDF parts list, extract all profiles and quantities,
+            and automatically allocate cutting jobs to 6m and 13m stock bins.
+            Export to Excel or PDF in one click.
+        </p>
+        <div class="hero-actions">
+            <a asp-controller="Cutting"
+               asp-action="Upload"
+               class="btn-primary-app btn-lg-app">
+                <i class="bi bi-upload"></i>
+                Upload Cutting List
+            </a>
+            <a href="#how-it-works" class="btn-ghost-app">
+                <i class="bi bi-play-circle"></i>
+                How it works
+            </a>
+        </div>
+    </div>
+    <div class="hero-visual">
+        <div class="bin-preview">
+            <div class="bin-card bin-13">
+                <div class="bin-label">Bin001 — 13m</div>
+                <div class="bin-bar">
+                    <div class="bin-used" style="width:78%">
+                        <span>10.14m used</span>
+                    </div>
+                    <div class="bin-offcut" style="width:22%">
+                        <span>2.86m</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bin-card bin-6">
+                <div class="bin-label">Bin002 — 6m</div>
+                <div class="bin-bar">
+                    <div class="bin-used" style="width:91%">
+                        <span>5.46m used</span>
+                    </div>
+                    <div class="bin-offcut" style="width:9%">
+                        <span>0.54m</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bin-card bin-6">
+                <div class="bin-label">Bin003 — 6m</div>
+                <div class="bin-bar">
+
+                    <div class="bin-used" style="width:65%">
+                        <span>3.9m used</span>
+                    </div>
+                    <div class="bin-offcut" style="width:35%">
+                        <span>2.1m</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="how-it-works" id="how-it-works">
+    <h2 class="section-title">How it works</h2>
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-card-number">01</div>
+            <div class="step-card-icon">
+                <i class="bi bi-file-earmark-pdf-fill"></i>
+            </div>
+            <h3>Upload PDF</h3>
+            <p>
+                Drag and drop your Craig Ryan parts list PDF.
+                The app reads every profile, part number,
+                length and quantity automatically.
+            </p>
+        </div>
+        <div class="step-card">
+            <div class="step-card-number">02</div>
+            <div class="step-card-icon">
+                <i class="bi bi-table"></i>
+            </div>
+            <h3>Review Parts</h3>
+            <p>
+                All extracted parts are displayed in a sortable
+                table grouped by profile. Verify the data before
+                proceeding to allocation.
+            </p>
+        </div>
+        <div class="step-card">
+            <div class="step-card-number">03</div>
+            <div class="step-card-icon">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+            </div>
+            <h3>Allocate Bins</h3>
+            <p>
+                The algorithm fills 6m and 13m stock bins using
+                a largest-first strategy to minimise off-cut
+                waste across the entire cutting list.
+            </p>
+        </div>
+        <div class="step-card">
+            <div class="step-card-number">04</div>
+            <div class="step-card-icon">
+                <i class="bi bi-download"></i>
+            </div>
+            <h3>Export</h3>
+            <p>
+                Download a fully formatted Excel workbook with
+                one tab per profile, or a landscape A4 PDF
+                cutting list ready for the workshop floor.
+            </p>
+        </div>
+    </div>
+</div>

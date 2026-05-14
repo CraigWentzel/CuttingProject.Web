@@ -1,0 +1,131 @@
+﻿@model CuttingProject.Web.Models.CuttingSession
+@{
+    ViewData["Title"] = "Parts List";
+}
+
+<div class="page-header">
+    <h1><i class="bi bi-list-ul me-2"></i>Parts List</h1>
+    <p>
+        Project: <strong>@Model.ProjectName</strong>
+        — @Model.Parts.Count records extracted
+    </p>
+</div>
+
+<div class="step-bar">
+    <div class="step done">
+        <div class="step-circle"><i class="bi bi-check"></i></div>
+        <span>Upload PDF</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step active">
+        <div class="step-circle">2</div>
+        <span>Review Parts</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+        <div class="step-circle">3</div>
+        <span>Bin Allocation</span>
+    </div>
+</div>
+
+@* ── Buttons ABOVE the grid ────────────────────────────── *@
+<div class="d-flex gap-3 mb-3">
+    <a asp-controller="Cutting"
+       asp-action="Upload"
+       class="btn-primary-app">
+        <i class="bi bi-arrow-left-circle"></i>
+        Upload Different File
+    </a>
+    <form method="post"
+          asp-controller="Cutting"
+          asp-action="Allocate"
+          id="allocateForm">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn-accent-app" id="allocateBtn">
+            <i class="bi bi-grid-3x3-gap" id="allocateIcon"></i>
+            <span class="spinner-border spinner-border-sm d-none" id="allocateSpinner"></span>
+            <span id="allocateBtnText">Allocate Bins</span>
+        </button>
+    </form>
+</div>
+
+@* ── Search ────────────────────────────────────────────── *@
+<div class="mb-3 d-flex gap-2 align-items-center">
+    <div class="input-group" style="max-width: 320px;">
+        <span class="input-group-text bg-white border-end-0">
+            <i class="bi bi-search text-muted"></i>
+        </span>
+        <input type="text"
+               id="partsSearch"
+               class="form-control border-start-0"
+               placeholder="Search profile or part..." />
+    </div>
+    <span id="rowCount" class="text-muted small"></span>
+</div>
+
+@* ── Table ─────────────────────────────────────────────── *@
+<div class="card mb-4">
+    <div class="card-header-primary">
+        <i class="bi bi-table"></i>
+        Extracted Parts — @Model.Parts.Count rows
+    </div>
+    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+        <table id="partsTable" class="table table-app table-bordered mb-0">
+            <thead style="position: sticky; top: 0; z-index: 5;">
+                <tr>
+                    <th>Profile</th>
+                    <th>Part</th>
+                    <th class="text-center">Length (m)</th>
+                    <th class="text-center">Quantity</th>
+                    <th class="text-center">Total Meters</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var part in Model.Parts)
+                {
+                    <tr>
+                        <td>@part.Profile</td>
+                        <td>@part.Part</td>
+                        <td class="text-center">@part.Length.ToString("F3")</td>
+                        <td class="text-center">@part.Quantity</td>
+                        <td class="text-center">@part.TotalMeters.ToString("F3")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // ── Search ─────────────────────────────────────────
+        const searchInput = document.getElementById('partsSearch');
+        const rowCount    = document.getElementById('rowCount');
+        const tableRows   = document.querySelectorAll('#partsTable tbody tr');
+
+        function updateCount() {
+            const visible = [...tableRows]
+                .filter(r => r.style.display !== 'none').length;
+            rowCount.textContent = `${visible} of ${tableRows.length} parts`;
+        }
+
+        searchInput.addEventListener('input', () => {
+            const term = searchInput.value.toLowerCase();
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+            updateCount();
+        });
+
+        updateCount();
+
+        // ── Allocate Spinner ───────────────────────────────
+        document.getElementById('allocateForm').addEventListener('submit', function () {
+            document.getElementById('allocateIcon').classList.add('d-none');
+            document.getElementById('allocateSpinner').classList.remove('d-none');
+            document.getElementById('allocateBtnText').textContent = 'Allocating...';
+            document.getElementById('allocateBtn').disabled = true;
+        });
+    </script>
+}

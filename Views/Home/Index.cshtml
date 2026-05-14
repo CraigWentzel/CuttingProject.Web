@@ -1,0 +1,211 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+@* ── Hero Section ─────────────────────────────────────── *@
+<div class="hero-section">
+    <div class="hero-content">
+        <div class="hero-badge">
+            <i class="bi bi-scissors"></i>
+            Craig Ryan Consulting — Steel Cutting Manager
+        </div>
+        <h1 class="hero-title">
+            Smarter <span class="hero-accent">Cutting List</span>
+            Management
+        </h1>
+        <p class="hero-subtitle">
+            Upload your PDF parts list, automatically extract all steel
+            profiles, quantities and lengths, then allocate every cutting
+            job to 6m or 13m stock bins to minimise waste and save time
+            on the workshop floor.
+        </p>
+        <div class="hero-actions">
+            <a asp-controller="Cutting"
+               asp-action="Upload"
+               class="btn-primary-app btn-lg-app">
+                <i class="bi bi-upload"></i>
+                Get Started
+            </a>
+            <a href="#how-it-works" class="btn-ghost-app">
+                <i class="bi bi-play-circle"></i>
+                How it works
+            </a>
+        </div>
+
+        @* ── Stats Strip ──────────────────────────────── *@
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <span class="hero-stat-value">6m</span>
+                <span class="hero-stat-label">Short Bins</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+                <span class="hero-stat-value">13m</span>
+                <span class="hero-stat-label">Long Bins</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+                <span class="hero-stat-value">PDF</span>
+                <span class="hero-stat-label">Input</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+                <span class="hero-stat-value">XLS</span>
+                <span class="hero-stat-label">Export</span>
+            </div>
+        </div>
+    </div>
+
+    @* ── Animated Bin Visual ──────────────────────────── *@
+    <div class="hero-visual">
+        <div class="bin-preview">
+            <div class="bin-preview-title">
+                <i class="bi bi-grid-3x3-gap me-2"></i>
+                Live Bin Preview
+            </div>
+            <div class="bin-card">
+                <div class="bin-label">Bin001 — UC203X203X46 — 13m</div>
+                <div class="bin-bar">
+                    <div class="bin-used" style="width: 78%">
+                        <span>10.14m used</span>
+                    </div>
+                    <div class="bin-offcut">
+                        <span>2.86m</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bin-card">
+                <div class="bin-label">Bin002 — L70X70X6 — 6m</div>
+                <div class="bin-bar">
+                    <div class="bin-used" style="width: 91%">
+                        <span>5.46m used</span>
+                    </div>
+                    <div class="bin-offcut">
+                        <span>0.54m</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bin-card">
+                <div class="bin-label">Bin003 — FL8X150 — 6m</div>
+                <div class="bin-bar">
+                    <div class="bin-used" style="width: 65%">
+                        <span>3.90m used</span>
+                    </div>
+                    <div class="bin-offcut">
+                        <span>2.10m</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bin-card">
+                <div class="bin-label">Bin004 — PC200X75 — 13m</div>
+                <div class="bin-bar">
+                    <div class="bin-used" style="width: 84%">
+                        <span>10.90m used</span>
+                    </div>
+                    <div class="bin-offcut">
+                        <span>2.10m</span>
+                    </div>
+                </div>
+            </div>
+
+            @* ── Mini Summary ────────────────────────── *@
+            <div class="bin-mini-summary">
+                <div class="bin-mini-stat">
+                    <i class="bi bi-box-seam"></i>
+                    <span>4 Bins</span>
+                </div>
+                <div class="bin-mini-stat">
+                    <i class="bi bi-rulers"></i>
+                    <span>30.40m Used</span>
+                </div>
+                <div class="bin-mini-stat">
+                    <i class="bi bi-scissors"></i>
+                    <span>7.60m Off-cut</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* ── How It Works ──────────────────────────────────────── *@
+<div class="how-it-works" id="how-it-works">
+    <h2 class="section-title">How it works</h2>
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-card-number">01</div>
+            <div class="step-card-icon">
+                <i class="bi bi-file-earmark-pdf-fill"></i>
+            </div>
+            <h3>Upload PDF</h3>
+            <p>
+                Drag and drop your parts list PDF. The app reads every
+                profile, part number, length and quantity automatically
+                using intelligent text extraction.
+            </p>
+        </div>
+        <div class="step-card">
+            <div class="step-card-number">02</div>
+            <div class="step-card-icon">
+                <i class="bi bi-table"></i>
+            </div>
+            <h3>Review Parts</h3>
+            <p>
+                All extracted parts display in a searchable table grouped
+                by profile. Verify the data before proceeding to bin
+                allocation.
+            </p>
+        </div>
+        <div class="step-card">
+            <div class="step-card-number">03</div>
+            <div class="step-card-icon">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+            </div>
+            <h3>Allocate Bins</h3>
+            <p>
+                The algorithm fills 6m and 13m stock bins using a
+                largest-first strategy to minimise off-cut waste across
+                the entire cutting list.
+            </p>
+        </div>
+        <div class="step-card">
+            <div class="step-card-number">04</div>
+            <div class="step-card-icon">
+                <i class="bi bi-download"></i>
+            </div>
+            <h3>Export</h3>
+            <p>
+                Download a formatted Excel workbook with one tab per
+                profile, or a landscape A4 PDF cutting list ready for
+                the workshop floor.
+            </p>
+        </div>
+    </div>
+</div>
+
+@* ── Feature Strip ─────────────────────────────────────── *@
+<div class="feature-strip">
+    <div class="feature-item">
+        <i class="bi bi-lightning-charge-fill"></i>
+        <span>Instant Extraction</span>
+    </div>
+    <div class="feature-item">
+        <i class="bi bi-bar-chart-fill"></i>
+        <span>Visual Bin Chart</span>
+    </div>
+    <div class="feature-item">
+        <i class="bi bi-file-earmark-excel-fill"></i>
+        <span>Excel Export</span>
+    </div>
+    <div class="feature-item">
+        <i class="bi bi-file-earmark-pdf-fill"></i>
+        <span>PDF Export</span>
+    </div>
+    <div class="feature-item">
+        <i class="bi bi-search"></i>
+        <span>Live Search</span>
+    </div>
+    <div class="feature-item">
+        <i class="bi bi-phone"></i>
+        <span>Mobile Friendly</span>
+    </div>
+</div>

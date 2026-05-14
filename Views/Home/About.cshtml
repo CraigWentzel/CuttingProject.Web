@@ -1,0 +1,138 @@
+﻿@{
+    ViewData["Title"] = "About";
+}
+
+<div class="page-header">
+    <h1><i class="bi bi-info-circle me-2"></i>About</h1>
+    <p>The technology and thinking behind this application</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header-primary">
+                <i class="bi bi-lightbulb"></i>
+                The Problem This Solves
+            </div>
+            <div class="card-body p-4">
+                <p>
+                    Structural steel fabrication projects generate complex
+                    cutting lists — dozens of profiles, hundreds of parts,
+                    each with specific lengths and quantities. Allocating
+                    these manually to stock lengths wastes time and material.
+                </p>
+                <p>
+                    This application automates the entire process — from
+                    raw PDF to workshop-ready cutting list — in three clicks.
+                </p>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header-primary">
+                <i class="bi bi-diagram-3"></i>
+                The Algorithm
+            </div>
+            <div class="card-body p-4">
+                <p>
+                    The bin allocator uses a
+                    <strong>First Fit Decreasing</strong> strategy —
+                    a classic bin-packing heuristic. Parts are grouped
+                    by profile then sorted by total meters descending.
+                    Each bin is filled greedily until capacity is reached.
+                </p>
+                <p>
+                    A 6m bin is chosen when remaining material fits within
+                    6m. Otherwise a 13m bin is used. This minimises the
+                    number of bins opened and reduces off-cut waste.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header-primary">
+                <i class="bi bi-stack"></i>
+                Tech Stack
+            </div>
+            <div class="card-body p-4">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill
+                                  text-success me-2"></i>
+                        ASP.NET Core 8 MVC
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill
+                                  text-success me-2"></i>
+                        C# 12
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill
+                                  text-success me-2"></i>
+                        PdfPig — PDF Extraction
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill
+                                  text-success me-2"></i>
+                        ClosedXML — Excel Export
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill
+                                  text-success me-2"></i>
+                        QuestPDF — PDF Export
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill
+                                  text-success me-2"></i>
+                        Chart.js — Data Visualisation
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill
+                                  text-success me-2"></i>
+                        Bootstrap 5 — Responsive UI
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill
+                                  text-success me-2"></i>
+                        Session-based State Management
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header-primary">
+                <i class="bi bi-person-circle"></i>
+                Built By
+            </div>
+            <div class="card-body p-4 text-center">
+                <div style="font-size: 3rem; color: var(--primary);">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                <h5 class="mt-2 mb-1" style="color: var(--primary);
+                                              font-weight: 700;">
+                    Craig Wentzel
+                </h5>
+                <p class="text-muted small mb-3">
+                   Junior Software Developer
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="https://github.com/CraigWentzel"
+                       target="_blank"
+                       class="btn-primary-app">
+                        <i class="bi bi-github"></i>
+                        GitHub
+                    </a>
+                    <a href="https://www.linkedin.com/in/craig-wentzel-588a261b/"
+                       target="_blank"
+                       class="btn-primary-app">
+                        <i class="bi bi-linkedin"></i>
+                        LinkedIn
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

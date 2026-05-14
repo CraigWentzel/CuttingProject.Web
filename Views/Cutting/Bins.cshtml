@@ -1,0 +1,339 @@
+﻿@model CuttingProject.Web.Models.CuttingSession
+@{
+    ViewData["Title"] = "Bin Allocation";
+    var grouped = Model.Bins.GroupBy(b => b.BinNumber).ToList();
+}
+
+@* ── Hidden Chart Data ─────────────────────────────────── *@
+<div id="chart-data" style="display:none;">
+    @foreach (var g in grouped)
+    {
+        <div class="bin-data-point"
+             data-label="@g.Key"
+             data-used="@Math.Round(g.Sum(b => b.TotalMeters), 3)"
+             data-offcut="@Math.Round(g.Max(b => b.OffCut), 3)">
+        </div>
+    }
+</div>
+
+<div class="page-header">
+    <h1><i class="bi bi-grid-3x3-gap me-2"></i>Bin Allocation</h1>
+    <p>Project: <strong>@Model.ProjectName</strong></p>
+</div>
+
+@* ── Step Bar ──────────────────────────────────────────── *@
+<div class="step-bar">
+    <div class="step done">
+        <div class="step-circle"><i class="bi bi-check"></i></div>
+        <span>Upload PDF</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step done">
+        <div class="step-circle"><i class="bi bi-check"></i></div>
+        <span>Review Parts</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step active">
+        <div class="step-circle">3</div>
+        <span>Bin Allocation</span>
+    </div>
+</div>
+
+@* ── Action Buttons ────────────────────────────────────── *@
+<div class="d-flex gap-3 flex-wrap mb-4">
+    <a asp-controller="Cutting"
+       asp-action="Parts"
+       class="btn-primary-app">
+        <i class="bi bi-arrow-left-circle"></i>
+        Back to Parts
+    </a>
+    <form method="post"
+          asp-controller="Cutting"
+          asp-action="ExportExcel">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn-accent-app">
+            <i class="bi bi-file-earmark-excel"></i>
+            Export to Excel
+        </button>
+    </form>
+    <form method="post"
+          asp-controller="Cutting"
+          asp-action="ExportPdf">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn-primary-app">
+            <i class="bi bi-file-earmark-pdf"></i>
+            Export to PDF
+        </button>
+    </form>
+    <a asp-controller="Cutting"
+       asp-action="Upload"
+       class="btn-primary-app">
+        <i class="bi bi-arrow-repeat"></i>
+        New Project
+    </a>
+</div>
+
+@* ── Summary Cards ─────────────────────────────────────── *@
+@* ── Summary Cards ─────────────────────────────────────── *@
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-2">
+        <div class="summary-card">
+            <div class="summary-value">@Model.Summary.TotalBins</div>
+            <div class="summary-label">Total Bins</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-2">
+        <div class="summary-card">
+            <div class="summary-value">@Model.Summary.TotalSixMeterBins</div>
+            <div class="summary-label">6m Bins</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-2">
+        <div class="summary-card">
+            <div class="summary-value">@Model.Summary.TotalThirteenMeterBins</div>
+            <div class="summary-label">13m Bins</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-2">
+        <div class="summary-card">
+            <div class="summary-value">@Model.Summary.TotalMetersUsed m</div>
+            <div class="summary-label">Total Meters Used</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-2">
+        <div class="summary-card accent">
+            <div class="summary-value">@Model.Summary.TotalOffCut m</div>
+            <div class="summary-label">Total Off Cut</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-2">
+        <div class="summary-card @(Model.Summary.EfficiencyPercent >= 80 ? "" : "accent")">
+            <div class="summary-value">@Model.Summary.EfficiencyPercent%</div>
+            <div class="summary-label">Efficiency</div>
+        </div>
+    </div>
+</div>
+
+
+
+@* ── Chart ─────────────────────────────────────────────── *@
+<div class="card mb-4">
+    <div class="card-header-primary">
+        <i class="bi bi-bar-chart-fill"></i>
+        Bin Usage Overview
+    </div>
+    <div class="card-body" style="height: 350px; position: relative;">
+        <canvas id="binChart"></canvas>
+    </div>
+</div>
+
+@* ── Profile Filter ────────────────────────────────────── *@
+<div class="mb-3 d-flex gap-3 align-items-center flex-wrap">
+    <div style="max-width: 280px;">
+        <select id="profileFilter" class="form-select form-select-sm">
+            <option value="">All Profiles</option>
+            @foreach (string profile in Model.Bins
+                        .Select(b => b.Profile)
+                        .Distinct()
+                        .OrderBy(p => p))
+            {
+                <option value="@profile">@profile</option>
+            }
+        </select>
+    </div>
+    <span id="binRowCount" class="text-muted small"></span>
+</div>
+
+@* ── Data Grid ─────────────────────────────────────────── *@
+<div class="card mb-4">
+    <div class="card-header-primary">
+        <i class="bi bi-table"></i>
+        Bin Allocation Detail — @grouped.Count bins
+    </div>
+    <div class="table-responsive"
+         style="max-height: 500px; overflow-y: auto;">
+        <table id="binTable"
+               class="table table-app table-bordered mb-0">
+            <thead style="position: sticky; top: 0; z-index: 5;">
+                <tr>
+                    <th>Bin No</th>
+                    <th>Profile</th>
+                    <th>Part</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-center">Cut Length</th>
+                    <th class="text-center">Total Meters</th>
+                    <th class="text-center">Bin Length</th>
+                    <th class="text-center">Off Cut</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var group in grouped)
+                {
+                    double usedTotal = Math.Round(
+                    group.Sum(b => b.TotalMeters), 3);
+                    double binLength = group.Max(b => b.BinLength);
+                    double offCut = group.Max(b => b.OffCut);
+
+                    @foreach (var bin in group)
+                    {
+                        <tr class="@(bin.BinLength > 0 ? "row-amber" : "")">
+                            <td>@bin.BinNumber</td>
+                            <td>@bin.Profile</td>
+                            <td>@bin.Part</td>
+                            <td class="text-center">@bin.Quantity</td>
+                            <td class="text-center">
+                                @bin.CutLength.ToString("F3")
+                            </td>
+                            <td class="text-center">
+                                @bin.TotalMeters.ToString("F3")
+                            </td>
+                            <td class="text-center">
+                                @(bin.BinLength > 0
+                                                        ? bin.BinLength.ToString("F3") : "")
+                                                                                        </td>
+                                                                                        <td class="text-center">
+                                @(bin.OffCut > 0
+                                                        ? bin.OffCut.ToString("F3") : "")
+                    </td>
+                </tr>
+                                }
+
+                    <tr class="row-summary" data-profile="@group.First().Profile">
+                        <td colspan="3">
+                            <i class="bi bi-check2"></i>
+                            Used: @usedTotal.ToString("F3") +
+                            OffCut: @offCut.ToString("F3") =
+                            @binLength.ToString("F3")
+                        </td>
+                        <td colspan="5"></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // ── Chart ──────────────────────────────────────────
+            var dataPoints = document.querySelectorAll('.bin-data-point');
+            var labels     = [];
+            var usedData   = [];
+            var offcutData = [];
+
+            dataPoints.forEach(function(dp) {
+                labels.push(dp.dataset.label);
+                usedData.push(parseFloat(dp.dataset.used));
+                offcutData.push(parseFloat(dp.dataset.offcut));
+            });
+
+            var ctx = document.getElementById('binChart');
+            if (ctx && labels.length > 0) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Meters Used',
+                                data: usedData,
+                                backgroundColor: '#0f4c81',
+                                borderRadius: 4,
+                                borderSkipped: false
+                            },
+                            {
+                                label: 'Off Cut',
+                                data: offcutData,
+                                backgroundColor: '#fff3cd',
+                                borderColor: '#ffa500',
+                                borderWidth: 1,
+                                borderRadius: 4,
+                                borderSkipped: false
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    font: { family: 'Segoe UI', size: 12 },
+                                    usePointStyle: true
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(ctx) {
+                                        return ' ' + ctx.dataset.label +
+                                               ': ' + ctx.parsed.y + ' m';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                stacked: true,
+                                grid: { display: false },
+                                ticks: { font: { family: 'Segoe UI', size: 10 } }
+                            },
+                            y: {
+                                stacked: true,
+                                beginAtZero: true,
+                                grid: { color: '#dde3ea' },
+                                ticks: {
+                                    font: { family: 'Segoe UI', size: 11 },
+                                    callback: function(val) { return val + ' m'; }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // ── Profile Filter ─────────────────────────────────
+            var profileFilter = document.getElementById('profileFilter');
+            var binRows       = document.querySelectorAll('#binTable tbody tr');
+            var binRowCount   = document.getElementById('binRowCount');
+
+            function filterBins() {
+                var selected = profileFilter.value.toLowerCase();
+
+                binRows.forEach(function(row) {
+                    var isSummary = row.classList.contains('row-summary');
+                    var show;
+
+                    if (selected === '') {
+                        show = true;
+                    } else if (isSummary) {
+                        var rowProfile = (row.dataset.profile || '').toLowerCase();
+                        show = rowProfile === selected;
+                    } else {
+                        var profileCell = row.cells[1];
+                        var profile = profileCell
+                            ? profileCell.textContent.trim().toLowerCase()
+                            : '';
+                        show = profile === selected;
+                    }
+
+                    row.style.display = show ? '' : 'none';
+                });
+
+                binRowCount.textContent = profileFilter.value
+                    ? 'Showing: ' + profileFilter.value
+                    : '';
+            }
+
+            // ✅ Wire up the event listener (was missing entirely)
+            profileFilter.addEventListener('change', filterBins);
+
+            // ✅ Run once on load to set initial state
+            filterBins();
+
+        }); // ✅ Correctly closes DOMContentLoaded
+    </script>
+}
