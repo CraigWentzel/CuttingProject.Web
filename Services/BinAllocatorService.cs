@@ -85,12 +85,12 @@ namespace CuttingProject.Web.Services
                     {
                         BinNumber = "Bin" + binCounter.ToString("D3"),
                         Part = "SUMMARY",
-                        Profile = binProfiles.First().Profile,   // <-- important for filtering
+                        Profile = binProfiles.First().Profile,
                         Quantity = 0,
                         CutLength = 0,
                         TotalMeters = Math.Round(binProfiles.Sum(r => r.TotalMeters), 3),
                         BinLength = binLength,
-                        OffCut = Math.Round(binLength - binProfiles.Sum(r => r.TotalMeters), 3),
+                        OffCut = offCut,
                         IsPlaced = true
                     });
 
@@ -110,8 +110,10 @@ namespace CuttingProject.Web.Services
                     .Distinct()
                     .Count(),
 
+                // Exclude SUMMARY rows to avoid double-counting detail rows
                 TotalMetersUsed = Math.Round(
-                    bins.Sum(b => b.TotalMeters), 3),
+                    bins.Where(b => b.Part != "SUMMARY")
+                        .Sum(b => b.TotalMeters), 3),
 
                 TotalOffCut = Math.Round(
                     bins.Where(b => b.OffCut > 0)
